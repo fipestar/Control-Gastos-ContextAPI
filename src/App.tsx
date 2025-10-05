@@ -1,6 +1,13 @@
+import { useMemo } from "react";
 import BudgetForm from "./components/BudgetForm"
+import { useBudget } from "./hooks/useBudget"
+import  BudgetTracker from "./components/BudgetTracker";
+import  ExpenseModal from "./components/ExpenseModal";
 
 function App() {
+
+  const { state } = useBudget();
+  const isValidBudget = useMemo(() => state.budget > 0, [state.budget]);
   
   return (
     <>
@@ -11,8 +18,14 @@ function App() {
       </header>
 
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-8 mt-10">
-          <BudgetForm />
+          {isValidBudget ? <BudgetTracker /> : <BudgetForm />}
       </div>
+
+      {isValidBudget && (
+       <main className="max-w-4xl mx-auto mt-10">
+        <ExpenseModal />
+      </main>
+      )}
     </>
   )
 }

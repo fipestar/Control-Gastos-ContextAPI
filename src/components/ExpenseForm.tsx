@@ -44,6 +44,14 @@ export default function ExpenseForm() {
      }
 
      dispatch({type: 'add-expense', payload: {expense}})
+
+     //reiniciar el state
+     setExpense({
+      amount: 0,
+      expenseName: '',
+      category: '',
+      date: new Date()
+     })
   }
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>

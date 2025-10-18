@@ -17,12 +17,14 @@ export default function ExpenseForm() {
   })
 
   const[error, setError] = useState('');
-  const {dispatch, state} = useBudget();
+  const[previusAmount, setPreviusAmount] = useState(0);
+  const {dispatch, state, remainingBudget} = useBudget();
 
   useEffect(() => {
     if(state.editingId) {
        const editingExpense = state.expenses.filter(currentExpense => currentExpense.id === state.editingId)[0]
        setExpense(editingExpense)
+       setPreviusAmount(editingExpense.amount)
     }
   }, [state.editingId])
 
@@ -51,6 +53,11 @@ export default function ExpenseForm() {
       return;
      }
 
+     if((expense.amount - previusAmount) > remainingBudget) {
+      setError('La cantidad del gasto excede el presupuesto disponible');
+      return;
+     }
+
      if(state.editingId) {
       dispatch({type: 'update-expense', payload: {expense: {id: state.editingId, ...expense}}})
      } else {
@@ -64,12 +71,13 @@ export default function ExpenseForm() {
       category: '',
       date: new Date()
      })
+     setPreviusAmount(0);
   }
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>
       <legend
         className="uppercase text-center text-2xl font-black border-b-4 border-blue-600 pb-2 mb-5">
-          Nuevo Gasto
+          {state.editingId ? 'Editar Gasto' : 'Nuevo Gasto'}
       </legend>
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
@@ -152,7 +160,7 @@ export default function ExpenseForm() {
       <input 
          type="submit"
          className="bg-blue-600 w-full p-3 text-white uppercase font-bold hover:bg-blue-700 cursor-pointer transition-colors"
-         value={'Registrar Gasto'} 
+         value={state.editingId ? 'Guardar Cambios' : 'Añadir Gasto'}
       
       />
     </form>
